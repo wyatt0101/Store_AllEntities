@@ -15,7 +15,7 @@ public class Order extends BaseEntity implements java.io.Serializable {
 
     @ManyToOne
     @JoinColumn(name = "address_id")
-    private Address shipping_address;
+    private Address address;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -53,12 +53,12 @@ public class Order extends BaseEntity implements java.io.Serializable {
         this.order_product = order_product;
     }
 
-    public Address getShipping_address() {
-        return shipping_address;
+    public Address getAddress() {
+        return address;
     }
 
-    public void setShipping_address(Address shipping_address) {
-        this.shipping_address = shipping_address;
+    public void setAddress(Address address) {
+        this.address = address;
     }
 
     public Double getTotal_price() {
@@ -91,9 +91,10 @@ public class Order extends BaseEntity implements java.io.Serializable {
                 "id=" + id +
                 ", status=" + status +
                 ", total_price=" + total_price +
-                ", shipping_address=" + shipping_address +
+                ", address=" + address +
                 ", user=" + user +
                 ", order_product=" + order_product +
+                ", payment=" + payment +
                 '}';
     }
 }

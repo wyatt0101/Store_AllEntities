@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Shopping Cart</title>
+  <link rel="stylesheet">
+</head>
+<body>
+
+<h1>Your Shopping Cart</h1>
+
+<!-- 检查购物车是否为空 -->
+<div th:if="${cart.products.isEmpty()}">
+  <p>Your cart is empty.</p>
+</div>
+
+<!-- 如果购物车有产品，显示产品列表 -->
+<div th:if="${!cart.products.isEmpty()}">
+  <table>
+    <thead>
+    <tr>
+      <th>Product Name</th>
+      <th>Quantity</th>
+      <th>Price</th>
+      <th>Total</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- 遍历购物车中的产品 -->
+    <tr th:each="item : ${cart.products}">
+      <td th:text="${item.product.name}"></td>
+      <td th:text="${item.quantity}"></td>
+      <td th:text="${item.product.price}"></td>
+      <td th:text="${item.product.price * item.quantity}"></td>
+      <td>
+        <!-- 移除产品 -->
+        <form th:action="@{/cart/remove}" method="post">
+          <input type="hidden" name="productId" th:value="${item.product.id}">
+          <button type="submit">Remove</button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <!-- 显示总价 -->
+  <p><strong>Total Price: </strong><span th:text="${cart.totalPrice}"></span></p>
+
+  <!-- 清空购物车 -->
+  <form th:action="@{/cart/clear}" method="post">
+    <button type="submit">Clear Cart</button>
+  </form>
+
+  <!-- 继续购物按钮 -->
+  <a th:href="@{/products}">Continue Shopping</a>
+
+  <!-- 结算按钮 -->
+  <form th:action="@{/checkout}" method="get">
+    <button type="submit">Checkout</button>
+  </form>
+</div>
+
+</body>
+</html>

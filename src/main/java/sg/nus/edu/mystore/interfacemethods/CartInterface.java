@@ -19,10 +19,9 @@ public interface CartInterface {
     public List<Cart> viewCartList(Integer user_id);
 
     // 更新购物车商品数量
+    public void updateQuantity(Integer user_id, Integer product_id, int quantity);
 
-
-//    public void updateProductQuantity(Integer user_id, Integer product_id, int quantity);
-//
-//    public void clearCart(Integer user_id);
+    // 清空购物车
+    public void emptyCart(Integer user_id);
 
 }

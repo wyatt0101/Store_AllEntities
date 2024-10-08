@@ -27,7 +27,7 @@ public class CartImplementation implements CartInterface {
     @Override
     public void addProductToCart(Integer userId, Integer productId, int quantity){
         Cart cartProduct = cartProductRepo.findCartProductByCartIdAndProductId(userId, productId);
-        //
+
         if(cartProduct != null) {
             cartProduct.setQuantity(quantity + cartProduct.getQuantity());
         }
@@ -42,7 +42,6 @@ public class CartImplementation implements CartInterface {
 
             cartProductRepo.save(cartProduct);
         }
-
     }
 
     @Transactional
@@ -64,5 +63,17 @@ public class CartImplementation implements CartInterface {
         return cartProductList;
     }
 
+    @Transactional
+    @Override
+    public void updateQuantity(Integer userId, Integer productId, int quantity) {
+        Cart cartProduct = cartProductRepo.findCartProductByCartIdAndProductId(userId, productId);
+        cartProduct.setQuantity(quantity);
+        cartProductRepo.save(cartProduct);
+    }
 
+    @Transactional
+    @Override
+    public void emptyCart(Integer userId) {
+        cartProductRepo.deletaAllCartProductByUserId(userId);
+    }
 }
