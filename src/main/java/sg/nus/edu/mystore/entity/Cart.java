@@ -2,6 +2,8 @@ package sg.nus.edu.mystore.entity;
 
 import jakarta.persistence.*;
 
+import java.util.Optional;
+
 @Entity
 public class Cart {
     @Id

@@ -1,6 +1,7 @@
 package sg.nus.edu.mystore.service;
 
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,16 +9,17 @@ import sg.nus.edu.mystore.entity.Cart;
 import sg.nus.edu.mystore.entity.Product;
 import sg.nus.edu.mystore.entity.User;
 import sg.nus.edu.mystore.interfacemethods.CartInterface;
-import sg.nus.edu.mystore.repository.CartProductRepository;
+import sg.nus.edu.mystore.repository.CartRepository;
 import sg.nus.edu.mystore.repository.ProductRepository;
 import sg.nus.edu.mystore.repository.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CartImplementation implements CartInterface {
     @Autowired
-    private CartProductRepository cartProductRepo;
+    private CartRepository CartRepo;
     @Autowired
     private UserRepository UserRepo;
     @Autowired
@@ -26,54 +28,55 @@ public class CartImplementation implements CartInterface {
     @Transactional
     @Override
     public void addProductToCart(Integer userId, Integer productId, int quantity){
-        Cart cartProduct = cartProductRepo.findCartProductByCartIdAndProductId(userId, productId);
+        Cart cart = CartRepo.findByUserIdAndProductId(userId, productId);
 
-        if(cartProduct != null) {
-            cartProduct.setQuantity(quantity + cartProduct.getQuantity());
+        if(cart != null) {
+            cart.setQuantity(quantity + cart.getQuantity());
         }
         else {
-            User user = UserRepo.findById(userId).get();
-            Product product = productRepo.findById(userId).get();
+            User user = UserRepo.findById(userId)
+                    .orElseThrow(() -> new EntityNotFoundException("User not found with id:" + userId));
+            Product product  = productRepo.findById(productId)
+                    .orElseThrow(() -> new EntityNotFoundException("Product not found with id:" + productId));
 
-            cartProduct = new Cart();
-            cartProduct.setUser(user);
-            cartProduct.setProduct(product);
-            cartProduct.setQuantity(quantity);
-
-            cartProductRepo.save(cartProduct);
+            cart = new Cart();
+            cart.setUser(user);
+            cart.setProduct(product);
+            cart.setQuantity(quantity);
         }
+        CartRepo.save(cart);
     }
 
     @Transactional
     @Override
     public void removeProductFromCart(Integer userId, Integer productId) {
-         cartProductRepo.deleteCartProductByCartIdAndProductId(userId, productId);
+         CartRepo.deleteByUserIdAndProductId(userId, productId);
     }
 
     @Transactional
     @Override
     public void removeAllProductsFromCart(Integer user_id){
-        cartProductRepo.deletaAllCartProductByUserId(user_id);
+        CartRepo.deletaByUserId(user_id);
     }
 
     @Transactional
     @Override
     public List<Cart> viewCartList(Integer userId) {
-        List<Cart> cartProductList = cartProductRepo.findCartProductByUserId(userId);
+        List<Cart> cartProductList = CartRepo.findByUserId(userId);
         return cartProductList;
     }
 
     @Transactional
     @Override
     public void updateQuantity(Integer userId, Integer productId, int quantity) {
-        Cart cartProduct = cartProductRepo.findCartProductByCartIdAndProductId(userId, productId);
-        cartProduct.setQuantity(quantity);
-        cartProductRepo.save(cartProduct);
+        Cart cart = CartRepo.findByUserIdAndProductId(userId, productId);
+        cart.setQuantity(quantity);
+        CartRepo.save(cart);
     }
 
     @Transactional
     @Override
     public void emptyCart(Integer userId) {
-        cartProductRepo.deletaAllCartProductByUserId(userId);
+        CartRepo.deletaByUserId(userId);
     }
 }

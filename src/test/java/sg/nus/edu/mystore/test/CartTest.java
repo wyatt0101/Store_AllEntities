@@ -47,6 +47,13 @@ public class CartTest {
     }
 
     @Test
+    void RemoveFromCartTest() {
+        User user1 = userRepo.findByUsername("wyatt");
+        Product product1 = productRepo.findByProductName("牙刷");
+        cartImpl.removeProductFromCart(user1.getId(), product1.getId());
+    }
+
+    @Test
     void ViewCartTest() {
         // TODO: Implement this test
 
