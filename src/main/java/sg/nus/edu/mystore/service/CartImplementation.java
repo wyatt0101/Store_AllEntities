@@ -68,6 +68,13 @@ public class CartImplementation implements CartInterface {
 
     @Transactional
     @Override
+    public List<Cart> viewCartListByProductName(Integer userId, String productName) {
+        List<Cart> cartProductList = CartRepo.findByUserIdAndProductName(userId, productName);
+        return cartProductList;
+    }
+
+    @Transactional
+    @Override
     public void updateQuantity(Integer userId, Integer productId, int quantity) {
         Cart cart = CartRepo.findByUserIdAndProductId(userId, productId);
         cart.setQuantity(quantity);
@@ -76,7 +83,9 @@ public class CartImplementation implements CartInterface {
 
     @Transactional
     @Override
-    public void emptyCart(Integer userId) {
-        CartRepo.deletaByUserId(userId);
+    public double calculateTotalPrice(Integer user_id){
+        double totalPrice = CartRepo.findTotalPriceByUserId(user_id);
+        return totalPrice;
     }
+
 }

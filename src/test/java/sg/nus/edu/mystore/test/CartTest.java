@@ -4,11 +4,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import sg.nus.edu.mystore.entity.Cart;
 import sg.nus.edu.mystore.entity.Product;
 import sg.nus.edu.mystore.entity.User;
 import sg.nus.edu.mystore.repository.ProductRepository;
 import sg.nus.edu.mystore.repository.UserRepository;
 import sg.nus.edu.mystore.service.CartImplementation;
+
+import java.util.List;
 
 @SpringBootTest
 public class CartTest {
@@ -54,8 +57,76 @@ public class CartTest {
     }
 
     @Test
-    void ViewCartTest() {
-        // TODO: Implement this test
-
+    void RemoveAllFromCartTest() {
+        User user1 = userRepo.findByUsername("wyatt");
+        cartImpl.removeAllProductsFromCart(user1.getId());
     }
+
+    @Test
+    void ViewCartTest() {
+        User user1 = userRepo.findByUsername("wyatt");
+        List<Cart> cartList = cartImpl.viewCartList(user1.getId());
+        for (Cart cart : cartList) {
+            System.out.println(cart);
+        }
+    }
+
+    @Test
+    void searchCartTest() {
+        User user1 = userRepo.findByUsername("wyatt");
+        List<Cart> cartList = cartImpl.viewCartListByProductName(user1.getId(), "牙");
+        for (Cart cart : cartList) {
+            System.out.println(cart);
+        }
+    }
+
+    @Test
+    void updateCartTest() {
+        User user1 = userRepo.findByUsername("wyatt");
+        Product product1 = productRepo.findByProductName("牙刷");
+        cartImpl.updateQuantity(user1.getId(), product1.getId(), 5);
+    }
+
+    @Test
+    void calculateTotalPriceTest() {
+        User user1 = userRepo.findByUsername("wyatt");
+        double totalPrice = cartImpl.calculateTotalPrice(user1.getId());
+        System.out.println(totalPrice);
+    }
+
+    // 边缘情况：尝试添加不存在的用户到购物车
+//    @Test
+//    void AddToCartWithNonExistentUserTest() {
+//        assertThrows(IllegalArgumentException.class, () -> {
+//            cartImpl.addProductToCart(-1L, 1L, 1); // 使用不存在的用户ID
+//        });
+//    }
+//
+//    // 边缘情况：尝试添加不存在的产品到购物车
+//    @Test
+//    void AddToCartWithNonExistentProductTest() {
+//        User user1 = userRepo.findByUsername("wyatt");
+//        assertThrows(IllegalArgumentException.class, () -> {
+//            cartImpl.addProductToCart(user1.getId(), -1L, 1); // 使用不存在的产品ID
+//        });
+//    }
+//
+//    // 边缘情况：添加负数数量的产品到购物车
+//    @Test
+//    void AddNegativeQuantityToCartTest() {
+//        User user1 = userRepo.findByUsername("wyatt");
+//        Product product1 = productRepo.findByProductName("牙刷");
+//        assertThrows(IllegalArgumentException.class, () -> {
+//            cartImpl.addProductToCart(user1.getId(), product1.getId(), -1); // 尝试添加负数量
+//        });
+//    }
+//
+//    // 边缘情况：查看空购物车
+//    @Test
+//    void ViewEmptyCartTest() {
+//        User user1 = userRepo.findByUsername("nonexistent_user"); // 确保这个用户不存在
+//        var cart = cartImpl.viewCart(user1.getId());
+//        assertNotNull(cart); // 购物车对象不应为空
+//        assertTrue(cart.getProducts().isEmpty()); // 确保购物车是空的
+//    }
 }

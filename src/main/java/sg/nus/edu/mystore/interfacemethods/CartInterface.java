@@ -12,16 +12,18 @@ public interface CartInterface {
     // 从购物车中删除商品
     public void removeProductFromCart(Integer user_id, Integer product_id);
 
-    // 从购物车删除所有商品
+    // 清空购物车
     public void removeAllProductsFromCart(Integer user_id);
 
-    // 查看购物车
+    // 查看购物车所有商品
     public List<Cart> viewCartList(Integer user_id);
+
+    // 查看购物车单个商品(模糊查询)
+    public List<Cart> viewCartListByProductName(Integer user_id, String productName);
 
     // 更新购物车商品数量
     public void updateQuantity(Integer user_id, Integer product_id, int quantity);
 
-    // 清空购物车
-    public void emptyCart(Integer user_id);
-
+    // 计算购物车总价
+    public double calculateTotalPrice(Integer user_id);
 }

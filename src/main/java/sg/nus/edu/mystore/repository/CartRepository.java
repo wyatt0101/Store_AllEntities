@@ -18,14 +18,21 @@ public interface CartRepository extends JpaRepository<Cart, Integer> {
     @Query("SELECT c FROM Cart c WHERE c.user.id =:userId")
     List<Cart> findByUserId(@Param("userId") Integer userId);
 
+    // 查询购物车中的商品（模糊查询）
+    @Query("SELECT c FROM Cart c WHERE c.user.id =:userId AND c.product.name LIKE %:keyword%")
+    List<Cart> findByUserIdAndProductName(@Param("userId") Integer userId, @Param("keyword") String keyword);
+
     // 删除购物车中具体商品
     @Modifying
     @Query("DELETE FROM Cart c WHERE c.user.id =:userId AND c.product.id =:productId")
     void deleteByUserIdAndProductId(@Param("userId") Integer userId, @Param("productId")Integer productId);
 
     // 删除购物车中所有商品
+    @Modifying
     @Query("DELETE FROM Cart C WHERE C.user.id =:userId")
     void deletaByUserId(@Param("userId") Integer userId);
 
-
+    // 计算购物车中商品的总价
+    @Query("SELECT SUM(c.product.price * c.quantity) FROM Cart c WHERE c.user.id =:userId")
+    Double findTotalPriceByUserId(@Param("userId") Integer userId);
 }
