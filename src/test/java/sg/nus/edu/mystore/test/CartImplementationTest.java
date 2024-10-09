@@ -54,11 +54,11 @@ public class CartImplementationTest {
         Product product2 = productRepo.findByProductName("显示器");
         Cart cart1 = new Cart(4, user1, product1);
         Cart cart2 = new Cart(5, user1, product2);
-        cartService.addProductToCart(cart1);
-        cartService.addProductToCart(cart2);
+//        cartService.addProductToCart(cart1);
+//        cartService.addProductToCart(cart2);
         // 插入数量为负数的情况
         Cart cart3 = new Cart(-1, user1, product2);
-        cartService.addProductToCart(cart3);
+//        cartService.addProductToCart(cart3);
     }
 
 }

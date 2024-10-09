@@ -32,15 +32,34 @@ public class CartImplementation implements CartInterface {
      */
     @Transactional
     @Override
-    public void addProductToCart(@Valid Cart cart){
-        Cart existingCart = CartRepo.findByUserIdAndProductId(cart.getUser().getId(), cart.getProduct().getId());
-
-        if (existingCart != null) {
-            existingCart.setQuantity(existingCart.getQuantity() + cart.getQuantity());
-            CartRepo.save(existingCart);
-        } else {
-            CartRepo.save(cart);
+    public void addProductToCart(Integer userId, Integer productId, Integer quantity){
+        // Validate quantity
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be greater than zero.");
         }
+
+        // Check if the product is already in the cart
+        Cart cart = CartRepo.findByUserIdAndProductId(userId, productId);
+
+        if (cart != null) {
+            // Update quantity if product is already in cart
+            cart.setQuantity(cart.getQuantity() + quantity);
+        } else {
+            // Find user and product entities
+            User user = UserRepo.findById(userId)
+                    .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+            Product product = productRepo.findById(productId)
+                    .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + productId));
+
+            // Create new cart entry
+            cart = new Cart();
+            cart.setUser(user);
+            cart.setProduct(product);
+            cart.setQuantity(quantity);
+        }
+
+        // Save the cart entry (new or updated)
+        CartRepo.save(cart);
     }
 
     /**
@@ -90,22 +109,27 @@ public class CartImplementation implements CartInterface {
      */
     @Transactional
     @Override
-    public void updateQuantity(Cart cart) {
-        Cart existingCart = CartRepo.findByUserIdAndProductId(cart.getUser().getId(), cart.getProduct().getId());
-        if (existingCart == null) {
-            throw new EntityNotFoundException("Cart entry not found for userId: " + cart.getUser().getId() + " and productId: " + cart.getProduct().getId());
+    public void updateQuantity(Integer userId, Integer productId, Integer quantity) {
+        // Validate quantity
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be greater than zero.");
         }
-        existingCart.setQuantity(cart.getQuantity());
-        CartRepo.save(existingCart);
+        // Check if the cart entry exists
+        Cart cart = CartRepo.findByUserIdAndProductId(userId, productId);
+        if (cart == null) {
+            throw new EntityNotFoundException("Cart entry not found! ");
+        }
+        // Update quantity
+        cart.setQuantity(quantity);
+        CartRepo.save(cart);
     }
-
 
     @Transactional
     @Override
     public double calculateTotalPrice(Integer user_id){
         Double totalPrice = CartRepo.findTotalPriceByUserId(user_id);
         if (totalPrice == null) {
-            throw new EntityNotFoundException("No cart items found for userId: " + user_id);
+            return 0.0;
         }
         return totalPrice;
     }
