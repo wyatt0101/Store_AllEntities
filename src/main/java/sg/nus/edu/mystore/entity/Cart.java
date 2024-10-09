@@ -2,6 +2,8 @@ package sg.nus.edu.mystore.entity;
 
 import jakarta.persistence.*;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
 @Entity
@@ -10,15 +12,28 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Min(value = 1, message = "Quantity should be at least 1")
+    @NotNull(message = "Quantity cannot be null")
     private Integer quantity;
 
+    @NotNull(message = "User cannot be null")
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
+    @NotNull(message = "Product cannot be null")
     @ManyToOne
     @JoinColumn(name = "product_id")
+
     private Product product;
+    public Cart() {
+    }
+
+    public Cart(Integer quantity, User user, Product product) {
+        this.quantity = quantity;
+        this.user = user;
+        this.product = product;
+    }
 
     public Integer getId() {
         return id;
