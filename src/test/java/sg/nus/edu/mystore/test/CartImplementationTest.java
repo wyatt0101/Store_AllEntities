@@ -56,6 +56,9 @@ public class CartImplementationTest {
         Cart cart2 = new Cart(5, user1, product2);
         cartService.addProductToCart(cart1);
         cartService.addProductToCart(cart2);
+        // 插入数量为负数的情况
+        Cart cart3 = new Cart(-1, user1, product2);
+        cartService.addProductToCart(cart3);
     }
 
 }
