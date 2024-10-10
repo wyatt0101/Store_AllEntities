@@ -52,13 +52,27 @@ public class CartImplementationTest {
         User user1 = userRepo.findByUsername("wyatt");
         Product product1 = productRepo.findByProductName("牙刷");
         Product product2 = productRepo.findByProductName("显示器");
-        Cart cart1 = new Cart(4, user1, product1);
-        Cart cart2 = new Cart(5, user1, product2);
-//        cartService.addProductToCart(cart1);
-//        cartService.addProductToCart(cart2);
+        Product product3 = productRepo.findByProductName("葡萄酒");
+
+        cartService.addProductToCart(user1.getId(), product1.getId(), 4);
+        cartService.addProductToCart(user1.getId(), product2.getId(), 2);
+        cartService.addProductToCart(user1.getId(), product3.getId(), 1);
         // 插入数量为负数的情况
-        Cart cart3 = new Cart(-1, user1, product2);
+//        Cart cart3 = new Cart(-1, user1, product2);
 //        cartService.addProductToCart(cart3);
+    }
+
+    @Test
+    void updateCartTest() {
+        User user1 = userRepo.findByUsername("wyatt");
+        Product product1 = productRepo.findByProductName("牙刷");
+        Product product2 = productRepo.findByProductName("显示器");
+        Product product3 = productRepo.findByProductName("葡萄酒");
+        cartService.updateQuantity(user1.getId(), product1.getId(), 5);
+        cartService.updateQuantity(user1.getId(), product2.getId(), 3);
+        cartService.updateQuantity(user1.getId(), product3.getId(), 2);
+        // 更新数量为负数的情况
+
     }
 
 }

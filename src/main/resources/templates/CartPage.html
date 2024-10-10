@@ -4,39 +4,62 @@
   <meta charset="UTF-8">
   <title>Shopping Cart</title>
   <link rel="stylesheet">
-</head>
-<body>
 
+</head>
+
+<body>
 <h1>Your Shopping Cart</h1>
 
-<!-- 检查购物车是否为空 -->
-<div th:if="${cart.products.isEmpty()}">
-  <p>Your cart is empty.</p>
-</div>
+<!-- Form for searching products by name -->
+<form action="/cart/searching" method="post">
+  <label for="keyword">Search Product:</label>
+  <input type="text" id="keyword" name="keyword" placeholder="Enter product name" required />
+  <button type="submit">Search</button>
+</form>
+<!-- Button to return to full cart view -->
+<form action="/cart" method="get" style="display:inline;">
+  <button type="submit">View Full Cart</button>
+</form>
 
-<!-- 如果购物车有产品，显示产品列表 -->
-<div th:if="${!cart.products.isEmpty()}">
+<br>
+
+<!-- Form for calculating total price based on selected products -->
+<form action="/cart/calculate" method="post">
+  <!-- Cart Table -->
   <table>
     <thead>
     <tr>
-      <th>Product Name</th>
-      <th>Quantity</th>
+      <th>Select</th>
+      <th>Product</th>
+      <th>Description</th>
       <th>Price</th>
-      <th>Total</th>
+      <th>Quantity</th>
+      <th>Subtotal</th>
       <th>Actions</th>
     </tr>
     </thead>
     <tbody>
-    <!-- 遍历购物车中的产品 -->
-    <tr th:each="item : ${cart.products}">
-      <td th:text="${item.product.name}"></td>
-      <td th:text="${item.quantity}"></td>
-      <td th:text="${item.product.price}"></td>
-      <td th:text="${item.product.price * item.quantity}"></td>
+    <!-- Iterate over cart items -->
+    <tr th:each="cartItem : ${cart}">
       <td>
-        <!-- 移除产品 -->
-        <form th:action="@{/cart/remove}" method="post">
-          <input type="hidden" name="productId" th:value="${item.product.id}">
+        <!-- Checkbox to select product, check if the product is in selectedProductIds -->
+        <input type="checkbox" name="selectedProducts" th:value="${cartItem.product.id}"
+               th:checked="${selectedProductIds != null && selectedProductIds.contains(cartItem.product.id)}" />
+      </td>
+      <td th:text="${cartItem.product.name}"></td>
+      <td th:text="${cartItem.product.description}"></td>
+      <td th:text="${cartItem.product.price}"></td>
+      <td>
+        <form action="/cart/update" method="post">
+          <input type="hidden" name="productId" th:value="${cartItem.product.id}" />
+          <input type="number" name="quantity" th:value="${cartItem.quantity}" min="1" />
+          <button type="submit">Update</button>
+        </form>
+      </td>
+      <td th:text="${cartItem.product.price * cartItem.quantity}"></td>
+      <td>
+        <form action="/cart/delete" method="post">
+          <input type="hidden" name="productId" th:value="${cartItem.product.id}" />
           <button type="submit">Remove</button>
         </form>
       </td>
@@ -44,22 +67,24 @@
     </tbody>
   </table>
 
-  <!-- 显示总价 -->
-  <p><strong>Total Price: </strong><span th:text="${cart.totalPrice}"></span></p>
+  <!-- Submit button to calculate total price of selected products -->
+  <button type="submit">Calculate Total for Selected Products</button>
+</form>
 
-  <!-- 清空购物车 -->
-  <form th:action="@{/cart/clear}" method="post">
-    <button type="submit">Clear Cart</button>
-  </form>
+<!-- Total Price -->
+<h2>Total Price: <span th:text="${totalPrice}"></span></h2>
 
-  <!-- 继续购物按钮 -->
-  <a th:href="@{/products}">Continue Shopping</a>
+<!-- Form for clearing the cart -->
+<form action="/cart/delete_all" method="post">
+  <button type="submit">Clear Cart</button>
+</form>
 
-  <!-- 结算按钮 -->
-  <form th:action="@{/checkout}" method="get">
-    <button type="submit">Checkout</button>
-  </form>
-</div>
+<br>
+<br>
 
+<!-- Form for continuing shopping -->
+<form action="/products" method="get">
+  <button type="submit">Continue Shopping</button>
+</form>
 </body>
 </html>

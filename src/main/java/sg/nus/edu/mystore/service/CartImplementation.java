@@ -88,9 +88,6 @@ public class CartImplementation implements CartInterface {
     @Override
     public List<Cart> viewCartList(Integer userId) {
         List<Cart> cartProductList = CartRepo.findByUserId(userId);
-        if (cartProductList.isEmpty()) {
-            throw new EntityNotFoundException("No cart items found for userId: " + userId);
-        }
         return cartProductList;
     }
 
@@ -98,9 +95,6 @@ public class CartImplementation implements CartInterface {
     @Override
     public List<Cart> viewCartListByProductName(Integer userId, String productName) {
         List<Cart> cartProductList = CartRepo.findByUserIdAndProductName(userId, productName);
-        if (cartProductList.isEmpty()) {
-            throw new EntityNotFoundException("No cart items found for " + productName);
-        }
         return cartProductList;
     }
 
